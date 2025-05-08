@@ -5,58 +5,94 @@ const axios = require('axios');
 const config = require('../config');
 const { formatAxiosError } = require('../utils/errorHandler');
 
-// Base URL for HubSpot API
-const API_BASE_URL = 'https://api.hubapi.com';
+/**
+ * Fetches a new access token using the refresh token
+ * 
+ * @param {string} refreshToken - The refresh token
+ * @returns {Promise<string>} - Promise that resolves to the access token
+ */
+async function fetchAccessToken(refreshToken) {
+  try {
+    const url = `${config.hubspot.baseUrl}/oauth/v1/token`;
+    
+    const data = new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: config.hubspot.clientId,
+      client_secret: config.hubspot.clientSecret,
+      refresh_token: refreshToken,
+    });
 
-// Create axios instance with common configuration
-const hubspotClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${config.hubspot.apiKey}`
+    const requestConfig = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+
+    const response = await axios.post(url, data.toString(), requestConfig);
+    return response.data.access_token;
+  } catch (error) {
+    throw formatAxiosError(error, 'Error fetching access token');
   }
-});
+}
+
+/**
+ * Creates an axios instance with the provided access token
+ * 
+ * @param {string} accessToken - The access token
+ * @returns {axios.AxiosInstance} - Configured axios instance
+ */
+function createHubspotClient(accessToken) {
+  return axios.create({
+    baseURL: config.hubspot.baseUrl,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+}
 
 /**
  * Sends a published marketing email to a specific contact
  * 
- * @param {string} emailId - The ID of the published marketing email
+ * @param {string} emailId - The numeric ID of the published marketing email from HubSpot
+ *                          Can be found in the URL when editing the email:
+ *                          https://app.hubspot.com/email/{PORTAL_ID}/edit/{EMAIL_ID}/settings
  * @param {string} recipientEmail - The email address of the recipient
  * @param {Object} contactProperties - Dynamic properties to include in the email
- * @returns {Promise<Object>} - Response containing the status of the email send
+ * @returns {Promise<Object>} - Promise that resolves to the response containing send status
  */
 async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {}) {
   try {
-    // Prepare request payload
+    const accessToken = await fetchAccessToken(config.hubspot.refreshToken);
+    const hubspotClient = createHubspotClient(accessToken);
+    
     const payload = {
-      emailId: emailId,
+      emailId: parseInt(emailId, 10), // Ensure emailId is a number
       message: {
         to: recipientEmail,
-        // You can add CC, BCC, etc. here if needed
       },
       contactProperties: contactProperties,
-      customProperties: {
-        // Add any custom properties here if needed
-      }
+      customProperties: {}
     };
 
-    // Send request to HubSpot API
+    // Using the correct v4 endpoint for single send
     const response = await hubspotClient.post(
-      '/marketing/v4/transactional/single-email/send',
+      '/marketing/v4/email/single-send',
       payload
     );
 
     return {
       status: response.status,
-      messageId: response.data.requestId || 'unknown',
+      statusId: response.data.statusId, // New field from v4 API
+      requestedAt: response.data.requestedAt,
       data: response.data
     };
   } catch (error) {
-    // Format and throw a more descriptive error
     throw formatAxiosError(error, 'Error sending marketing email');
   }
 }
 
 module.exports = {
-  sendMarketingEmail
+  sendMarketingEmail,
+  fetchAccessToken
 };
