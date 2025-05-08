@@ -1,9 +1,9 @@
 /**
  * Service for interacting with the HubSpot API
  */
-const axios = require('axios');
-const config = require('../config');
-const { formatAxiosError } = require('../utils/errorHandler');
+import axios from 'axios';
+import config from '../config/index.js';
+import { formatAxiosError } from '../utils/errorHandler.js';
 
 /**
  * Fetches a new access token using the refresh token
@@ -15,6 +15,11 @@ async function fetchAccessToken(refreshToken) {
   try {
     const url = `${config.hubspot.baseUrl}/oauth/v1/token`;
     
+    console.log("================================================");
+    console.log(refreshToken);
+    console.log("================================================");
+
+
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
       client_id: config.hubspot.clientId,
@@ -92,7 +97,7 @@ async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {
   }
 }
 
-module.exports = {
+export {
   sendMarketingEmail,
   fetchAccessToken
 };

@@ -1,12 +1,16 @@
 /**
  * Configuration management for the application
  */
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const config = {
   hubspot: {
-    apiKey: process.env.HUBSPOT_API_KEY,
-    emailId: process.env.HUBSPOT_EMAIL_ID
+    clientId: process.env.HUBSPOT_CLIENT_ID,
+    clientSecret: process.env.HUBSPOT_CLIENT_SECRET,
+    refreshToken: process.env.HUBSPOT_REFRESH_TOKEN,
+    emailId: process.env.HUBSPOT_EMAIL_ID,
+    baseUrl: 'https://api.hubapi.com'
   },
   recipient: {
     email: process.env.RECIPIENT_EMAIL,
@@ -17,7 +21,9 @@ const config = {
 // Validate required configuration
 function validateConfig() {
   const requiredVars = [
-    { key: 'HUBSPOT_API_KEY', value: config.hubspot.apiKey },
+    { key: 'HUBSPOT_CLIENT_ID', value: config.hubspot.clientId },
+    { key: 'HUBSPOT_CLIENT_SECRET', value: config.hubspot.clientSecret },
+    { key: 'HUBSPOT_REFRESH_TOKEN', value: config.hubspot.refreshToken },
     { key: 'HUBSPOT_EMAIL_ID', value: config.hubspot.emailId },
     { key: 'RECIPIENT_EMAIL', value: config.recipient.email }
   ];
@@ -40,4 +46,4 @@ try {
   process.exit(1);
 }
 
-module.exports = config;
+export default config;

@@ -1,7 +1,7 @@
 /**
  * Utility functions for logging messages to the console
  */
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 /**
  * Formats a timestamp string for logging
@@ -79,7 +79,7 @@ function logWarning(message) {
   console.log(chalk.yellow(`[${timestamp}] ⚠ WARNING: ${message}`));
 }
 
-module.exports = {
+export {
   logSuccess,
   logError,
   logInfo,

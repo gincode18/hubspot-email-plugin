@@ -1,9 +1,9 @@
 /**
  * Main entry point for the HubSpot email sender application
  */
-const { sendMarketingEmail } = require('./services/hubspotService');
-const { logSuccess, logError } = require('./utils/logger');
-const config = require('./config');
+import { sendMarketingEmail } from './services/hubspotService.js';
+import { logSuccess, logError } from './utils/logger.js';
+import config from './config/index.js';
 
 async function main() {
   try {

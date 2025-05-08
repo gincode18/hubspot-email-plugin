@@ -50,6 +50,6 @@ function formatAxiosError(error, contextMessage = 'API Error') {
   return formattedError;
 }
 
-module.exports = {
+export {
   formatAxiosError
 };
