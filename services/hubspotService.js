@@ -86,6 +86,10 @@ async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {
       payload
     );
 
+    console.log("================================================");
+    console.log(response.data);
+    console.log("================================================");
+
     return {
       status: response.status,
       statusId: response.data.statusId, // New field from v4 API

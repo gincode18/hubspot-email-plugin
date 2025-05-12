@@ -19,6 +19,7 @@ export const hubsoptScopes = () => {
     "crm.objects.leads.read",
     "crm.objects.custom.read",
     "crm.schemas.custom.read",
+    "marketing-email",
   ];
 
   return scopes?.join(" ")?.toString();
@@ -32,7 +33,7 @@ app.get("/init", (req, res) => {
     client_id: process.env.HUBSPOT_CLIENT_ID,
     redirect_uri: process.env.HUBSPOT_REDIRECT_URL,
     scope: hubsoptScopes(),
-    optional_scope: ["marketing-email", "transactional-email"].join(" ")?.toString(),
+    // optional_scope: ["marketing-email", "transactional-email"].join(" ")?.toString(),
     response_type: "code",
   });
   const authUrl = `https://app.hubspot.com/oauth/authorize?${authParams.toString()}`;

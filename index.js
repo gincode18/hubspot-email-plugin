@@ -24,7 +24,7 @@ async function main() {
 
     // Log success message with details
     logSuccess('Email sent successfully!', {
-      messageId: result.messageId,
+      statusId: result.statusId,
       status: result.status,
       to: config.recipient.email
     });
