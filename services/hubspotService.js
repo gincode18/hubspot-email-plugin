@@ -64,9 +64,10 @@ function createHubspotClient(accessToken) {
  *                          https://app.hubspot.com/email/{PORTAL_ID}/edit/{EMAIL_ID}/settings
  * @param {string} recipientEmail - The email address of the recipient
  * @param {Object} contactProperties - Dynamic properties to include in the email
+ * @param {Object} customProperties - Custom properties to include in the email template
  * @returns {Promise<Object>} - Promise that resolves to the response containing send status
  */
-async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {}) {
+async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {}, customProperties = {}) {
   try {
     const accessToken = await fetchAccessToken(config.hubspot.refreshToken);
     const hubspotClient = createHubspotClient(accessToken);
@@ -77,7 +78,7 @@ async function sendMarketingEmail(emailId, recipientEmail, contactProperties = {
         to: recipientEmail,
       },
       contactProperties: contactProperties,
-      customProperties: {}
+      customProperties: customProperties
     };
 
     // Using the correct v4 endpoint for single send

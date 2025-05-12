@@ -1,6 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import axios from "axios";
+import { sendCustomEmail } from './example.js';
+import { logError } from './utils/logger.js';
+
 dotenv.config();
 const app = express();
 const PORT = 3000;
@@ -75,6 +78,45 @@ app.get("/validate-callback", async (req, res) => {
   res.status(200).send("connected")
 });
 
+// Route for sending custom emails
+app.post("/send", async (req, res) => {
+  try {
+    const { email, content } = req.body;
+    
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({ error: 'Email address is required' });
+    }
+    
+    if (!content) {
+      return res.status(400).json({ error: 'Custom content is required' });
+    }
+    
+    // Send the email
+    const result = await sendCustomEmail(email, content);
+    
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      message: 'Email sent successfully',
+      data: {
+        to: email,
+        statusId: result.statusId,
+        requestedAt: result.requestedAt
+      }
+    });
+  } catch (error) {
+    logError('API error sending email', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send email',
+      error: error.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Send emails with POST request to http://localhost:${PORT}/api/send-email`);
+  console.log(`Example request body: { "email": "recipient@example.com", "content": "Your custom message here" }`);
 });
