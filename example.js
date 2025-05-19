@@ -44,11 +44,11 @@ async function sendCustomEmail(recipientEmail, customContent) {
 // Example usage:
 // Run this script directly to send a test email
 
-  const customContent = "Hey, We have a great deal for you!";
-  const recipientEmail = process.env.RECIPIENT_EMAIL || config.recipient.email;
+  // const customContent = "Hey, We have a great deal for you!";
+  // const recipientEmail = process.env.RECIPIENT_EMAIL || config.recipient.email;
   
-  sendCustomEmail(recipientEmail, customContent)
-    .then(() => console.log('Example completed successfully'))
-    .catch(() => process.exit(1));
+  // sendCustomEmail(recipientEmail, customContent)
+  //   .then(() => console.log('Example completed successfully'))
+  //   .catch(() => process.exit(1));
 
 export { sendCustomEmail }; 
